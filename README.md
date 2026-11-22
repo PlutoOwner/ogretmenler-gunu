@@ -30,7 +30,7 @@ Kurulum gerekmez. Yazı tipleri (Caveat ve Nunito) Google Fonts üzerinden yükl
 ## 📁 Dosya Yapısı
 
 ```
-├── ogretmenler-gunu.html   # HTML + CSS + JS (tek dosya)
+├── index.html   # HTML + CSS + JS (tek dosya)
 └── README.md
 ```
 
