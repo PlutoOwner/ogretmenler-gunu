@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>24 Kasım Öğretmenler Günü</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --board: #1f3a2f;
+    --board-dark: #152a22;
+    --chalk: #f4f1e8;
+    --chalk-dim: rgba(244, 241, 232, .65);
+    --wood: #8a5a34;
+    --wood-dark: #5e3b20;
+    --yellow: #ffd95a;
+    --pink: #ff9eb5;
+    --blue: #8fd3ff;
+    --green: #b6f09c;
+    --orange: #ffb877;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Nunito', system-ui, sans-serif;
+    background: var(--board-dark);
+    color: var(--chalk);
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .chalk { font-family: 'Caveat', cursive; }
+
+  /* ---------- HERO / KARA TAHTA ---------- */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+  }
+  .board {
+    position: relative;
+    width: min(1100px, 100%);
+    min-height: 78vh;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.06), transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(255,255,255,.04), transparent 50%),
+      var(--board);
+    border: 22px solid var(--wood);
+    border-image: linear-gradient(135deg, var(--wood), var(--wood-dark), var(--wood)) 1;
+    box-shadow: 0 30px 60px rgba(0,0,0,.55), inset 0 0 80px rgba(0,0,0,.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1.5rem 5rem;
+    overflow: hidden;
+  }
+  .board::after { /* tebeşir tozu dokusu */
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .tray {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 18px;
+    background: linear-gradient(var(--wood), var(--wood-dark));
+  }
+  .tray span {
+    position: absolute; bottom: 14px;
+    width: 46px; height: 10px; border-radius: 4px;
+    background: var(--chalk);
+    box-shadow: 0 2px 3px rgba(0,0,0,.4);
+  }
+  .tray span:nth-child(1) { left: 12%; transform: rotate(-4deg); }
+  .tray span:nth-child(2) { left: 16%; width: 30px; background: var(--pink); }
+  .tray span:nth-child(3) { right: 18%; background: var(--yellow); transform: rotate(6deg); }
+  .eraser {
+    position: absolute; bottom: 14px; right: 8%;
+    width: 80px; height: 22px; border-radius: 4px;
+    background: linear-gradient(#3a5ba0 55%, #ddd 55%);
+    box-shadow: 0 2px 4px rgba(0,0,0,.5);
+  }
+
+  .date-tag {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--yellow);
+    letter-spacing: 2px;
+    margin-bottom: .5rem;
+    opacity: 0;
+    animation: fadeIn 1s .3s forwards;
+  }
+  .title {
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 1;
+    min-height: 1.1em;
+    text-shadow: 0 0 2px rgba(255,255,255,.5), 0 0 18px rgba(255,255,255,.12);
+  }
+  .title .cursor {
+    display: inline-block; width: .08em; height: .8em;
+    background: var(--chalk); margin-left: .05em;
+    animation: blink .8s infinite;
+    vertical-align: baseline;
+  }
+  .subtitle {
+    max-width: 640px;
+    margin: 1.2rem auto 0;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--chalk-dim);
+    opacity: 0;
+    animation: fadeIn 1s 2.6s forwards;
+  }
+  .underline-svg { width: min(420px, 70%); margin-top: .4rem; }
+  .underline-svg path {
+    stroke-dasharray: 600; stroke-dashoffset: 600;
+    animation: draw 1.2s 2.2s ease forwards;
+  }
+
+  /* Geri sayım */
+  .countdown {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    margin-top: 2.2rem;
+    opacity: 0; animation: fadeIn 1s 3s forwards;
+  }
+  .cd-box {
+    min-width: 84px;
+    padding: .6rem .8rem;
+    border: 2px dashed var(--chalk-dim);
+    border-radius: 12px;
+  }
+  .cd-box b { display: block; font-family: 'Caveat', cursive; font-size: 2.6rem; line-height: 1; }
+  .cd-box small { font-size: .8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--chalk-dim); }
+  .today-msg { font-family: 'Caveat', cursive; font-size: 2.2rem; color: var(--yellow); }
+
+  .btn {
+    margin-top: 2rem;
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 1.05rem;
+    padding: .9rem 1.8rem;
+    border-radius: 999px;
+    border: none; cursor: pointer;
+    background: var(--yellow); color: #2b2b2b;
+    box-shadow: 0 6px 0 #c9a63a, 0 10px 20px rgba(0,0,0,.35);
+    transition: transform .15s, box-shadow .15s;
+    opacity: 0; animation: fadeIn 1s 3.4s forwards;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #c9a63a, 0 4px 10px rgba(0,0,0,.35); }
+
+  /* Uçuşan tebeşir sembolleri */
+  .doodle {
+    position: absolute;
+    font-family: 'Caveat', cursive;
+    color: rgba(244,241,232,.18);
+    user-select: none; pointer-events: none;
+    animation: float 9s ease-in-out infinite;
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 1.2rem; left: 50%;
+    transform: translateX(-50%);
+    font-size: .85rem; color: var(--chalk-dim);
+    animation: bob 2s infinite;
+    text-decoration: none;
+  }
+
+  /* ---------- ALINTI ---------- */
+  section { padding: 6rem 1.5rem; }
+  .quote-sec {
+    background: linear-gradient(180deg, var(--board-dark), #10201a);
+    text-align: center;
+  }
+  .quote {
+    max-width: 900px; margin: 0 auto;
+    font-family: 'Caveat', cursive;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    line-height: 1.2;
+  }
+  .quote::before { content: "“"; color: var(--yellow); }
+  .quote::after  { content: "”"; color: var(--yellow); }
+  .quote-author { margin-top: 1.2rem; color: var(--chalk-dim); letter-spacing: 1px; }
+
+  /* ---------- KARTLAR ---------- */
+  .sec-title {
+    text-align: center;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    margin-bottom: .5rem;
+  }
+  .sec-sub { text-align: center; color: var(--chalk-dim); margin-bottom: 3rem; }
+  .cards {
+    max-width: 1100px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+  }
+  .card { perspective: 1000px; height: 260px; cursor: pointer; }
+  .card-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform .7s cubic-bezier(.2,.8,.2,1);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner, .card:hover .card-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 1.5rem; text-align: center;
+  }
+  .front {
+    background: rgba(255,255,255,.05);
+    border: 2px solid rgba(255,255,255,.12);
+  }
+  .front .ico { font-size: 3.4rem; margin-bottom: .6rem; }
+  .front h3 { font-size: 2.1rem; }
+  .front small { color: var(--chalk-dim); margin-top: .3rem; }
+  .back { transform: rotateY(180deg); color: #24302a; font-size: 1.05rem; font-weight: 600; }
+
+  /* ---------- PANO ---------- */
+  .board-sec { background: #10201a; }
+  .cork {
+    max-width: 1100px; margin: 0 auto;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,.08) 1px, transparent 2px) 0 0/14px 14px,
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.07) 1px, transparent 2px) 0 0/11px 11px,
+      #b98a55;
+    border: 16px solid var(--wood-dark);
+    border-radius: 10px;
+    padding: 2rem;
+    min-height: 420px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,.35), 0 20px 40px rgba(0,0,0,.5);
+  }
+  .note-form {
+    display: flex; gap: .8rem; flex-wrap: wrap;
+    max-width: 1100px; margin: 0 auto 1.8rem;
+  }
+  .note-form input, .note-form textarea {
+    flex: 1 1 220px;
+    font-family: 'Nunito', sans-serif; font-size: 1rem;
+    padding: .9rem 1rem; border-radius: 14px;
+    border: 2px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.06);
+    color: var(--chalk);
+    resize: none;
+  }
+  .note-form textarea { flex: 3 1 340px; height: 52px; }
+  .note-form input:focus, .note-form textarea:focus { outline: none; border-color: var(--yellow); }
+  .note-form button { margin-top: 0; opacity: 1; animation: none; }
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.6rem;
+  }
+  .note {
+    position: relative;
+    padding: 1.6rem 1.1rem 1.1rem;
+    min-height: 170px;
+    color: #2a2a2a;
+    font-family: 'Caveat', cursive;
+    font-size: 1.45rem; line-height: 1.15;
+    box-shadow: 3px 6px 12px rgba(0,0,0,.3);
+    transform: rotate(var(--r));
+    transition: transform .25s;
+    animation: pop .45s cubic-bezier(.2,1.6,.4,1);
+    word-wrap: break-word;
+  }
+  .note:hover { transform: rotate(0) scale(1.05); z-index: 2; }
+  .note::before { /* raptiye */
+    content: ""; position: absolute; top: 8px; left: 50%;
+    width: 16px; height: 16px; border-radius: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 35% 35%, #ff7b7b, #b3191f);
+    box-shadow: 0 2px 3px rgba(0,0,0,.45);
+  }
+  .note .to { font-weight: 700; font-size: 1.6rem; margin-bottom: .3rem; }
+  .note .del {
+    position: absolute; top: 4px; right: 8px;
+    background: none; border: none; cursor: pointer;
+    font-size: 1.1rem; opacity: 0; transition: opacity .2s; color: #555;
+  }
+  .note:hover .del { opacity: .7; }
+
+  footer {
+    text-align: center; padding: 3rem 1rem;
+    color: var(--chalk-dim);
+    background: #0b1712;
+  }
+  footer .chalk { font-size: 1.8rem; color: var(--chalk); }
+  footer .ig { color: var(--yellow); font-weight: 800; text-decoration: none; }
+  footer .ig:hover { text-decoration: underline; }
+
+  /* Kağıt uçak */
+  .plane {
+    position: fixed; z-index: 50; pointer-events: none;
+    font-size: 2.6rem;
+    left: -60px;
+  }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+
+  /* Görünür olunca belirme */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .9s, transform .9s; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @keyframes fadeIn { to { opacity: 1; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--rot,0deg)); } 50% { transform: translateY(-18px) rotate(calc(var(--rot,0deg) + 8deg)); } }
+  @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
+  @keyframes pop { from { transform: scale(.3) rotate(0); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="board" id="board">
+    <p class="date-tag">24 Kasım · Öğretmenler Günü</p>
+    <h1 class="title"><span id="typed"></span><span class="cursor"></span></h1>
+    <svg class="underline-svg" viewBox="0 0 420 30" fill="none">
+      <path d="M5 20 C 90 5, 180 28, 260 14 S 380 8, 415 18" stroke="#ffd95a" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <p class="subtitle">Bize harfleri, sayıları ve en önemlisi hayal kurmayı öğreten tüm öğretmenlerimize sonsuz teşekkürler.</p>
+
+    <div class="countdown" id="countdown"></div>
+
+    <button class="btn" id="planeBtn">✈️ Teşekkür uçağı gönder</button>
+
+    <div class="tray"><span></span><span></span><span></span><div class="eraser"></div></div>
+  </div>
+  <a href="#alinti" class="scroll-hint">aşağı kaydır ↓</a>
+</header>
+
+<!-- ALINTI -->
+<section class="quote-sec" id="alinti">
+  <p class="quote reveal">Öğretmenler, yeni nesil sizin eseriniz olacaktır.</p>
+  <p class="quote-author reveal">— Mustafa Kemal Atatürk, Başöğretmen</p>
+</section>
+
+<!-- KARTLAR -->
+<section>
+  <h2 class="sec-title reveal" style="margin-bottom:3rem">Öğretmenim, sen…</h2>
+  <div class="cards" id="cards"></div>
+</section>
+
+<!-- PANO -->
+<section class="board-sec">
+  <h2 class="sec-title reveal">Teşekkür Panosu</h2>
+  <p class="sec-sub reveal">Öğretmenine bir not bırak, panoya iğnele 📌</p>
+
+  <form class="note-form reveal" id="noteForm">
+    <input id="noteTo" maxlength="40" placeholder="Öğretmeninin adı (ör. Ayşe Hoca)" required>
+    <textarea id="noteMsg" maxlength="160" placeholder="Mesajın…" required></textarea>
+    <button class="btn" type="submit">Panoya as</button>
+  </form>
+
+  <div class="cork reveal">
+    <div class="notes" id="notes"></div>
+  </div>
+</section>
+
+<footer>
+  <p class="chalk">İyi ki varsınız, öğretmenim! 🍎</p>
+  <p>24 Kasım Öğretmenler Günü kutlu olsun.</p>
+  <p style="margin-top:1rem"><a class="ig" href="https://www.instagram.com/mmustafager_/" target="_blank" rel="noopener">📸 @mmustafager_</a></p>
+</footer>
+
+<script>
+/* ---------- Daktilo efekti ---------- */
+const phrases = ["Öğretmenim,", "iyi ki varsın!"];
+const typed = document.getElementById("typed");
+let full = phrases.join(" ");
+let i = 0;
+(function type() {
+  if (i <= full.length) {
+    typed.textContent = full.slice(0, i++);
+    setTimeout(type, i < 3 ? 300 : 75 + Math.random() * 60);
+  }
+})();
+
+/* ---------- Tahtada uçuşan semboller ---------- */
+const board = document.getElementById("board");
+const symbols = ["A", "B", "C", "π", "√x", "2+2", "E=mc²", "✏️", "📚", "★", "∑", "a²+b²", "♪", "🍎", "∞", "Ö", "Ğ", "?"];
+for (let k = 0; k < 18; k++) {
+  const d = document.createElement("span");
+  d.className = "doodle";
+  d.textContent = symbols[k % symbols.length];
+  d.style.left = Math.random() * 92 + "%";
+  d.style.top = Math.random() * 85 + "%";
+  d.style.fontSize = (1.4 + Math.random() * 2.4) + "rem";
+  d.style.setProperty("--rot", (Math.random() * 40 - 20) + "deg");
+  d.style.animationDelay = (-Math.random() * 9) + "s";
+  board.appendChild(d);
+}
+
+/* ---------- Geri sayım (24 Kasım, İstanbul saati) ---------- */
+const cd = document.getElementById("countdown");
+function nextTeachersDay() {
+  const now = new Date();
+  let y = now.getFullYear();
+  // 24 Kasım 00:00 UTC+3 = 23 Kasım 21:00 UTC
+  let start = new Date(Date.UTC(y, 10, 23, 21, 0, 0));
+  let end = new Date(Date.UTC(y, 10, 24, 21, 0, 0));
+  if (now >= end) { start = new Date(Date.UTC(y + 1, 10, 23, 21)); end = new Date(Date.UTC(y + 1, 10, 24, 21)); }
+  return { start, end, now };
+}
+function tick() {
+  const { start, end, now } = nextTeachersDay();
+  if (now >= start && now < end) {
+    cd.innerHTML = '<p class="today-msg">🎉 Bugün Öğretmenler Günü! 🎉</p>';
+    return;
+  }
+  let diff = Math.floor((start - now) / 1000);
+  const parts = [
+    [Math.floor(diff / 86400), "gün"],
+    [Math.floor(diff % 86400 / 3600), "saat"],
+    [Math.floor(diff % 3600 / 60), "dakika"],
+    [diff % 60, "saniye"],
+  ];
+  cd.innerHTML = parts.map(([v, l]) =>
+    `<div class="cd-box"><b>${String(v).padStart(2, "0")}</b><small>${l}</small></div>`).join("");
+}
+tick(); setInterval(tick, 1000);
+
+/* ---------- Kartlar ---------- */
+const cardData = [
+  ["🔦", "Işık", "yolumu aydınlattın", "Karanlıkta kaldığımda yolu gösteren ilk kişi sendin.", "var(--yellow)"],
+  ["🌱", "Bahçıvan", "bizi büyüttün", "Her birimizi farklı bir çiçek gibi sabırla suladın.", "var(--green)"],
+  ["🧭", "Pusula", "yön verdin", "Ne olmak istediğimi bilmediğimde bana yön gösterdin.", "var(--blue)"],
+  ["❤️", "İkinci Aile", "hep yanımdaydın", "Sadece ders değil; sevgi, saygı ve iyilik de öğrettin.", "var(--pink)"],
+];
+document.getElementById("cards").innerHTML = cardData.map(([ico, t, s, back, c]) => `
+  <div class="card reveal" tabindex="0">
+    <div class="card-inner">
+      <div class="face front"><div class="ico">${ico}</div><h3>${t}</h3><small>${s}</small></div>
+      <div class="face back" style="background:${c}">${back}</div>
+    </div>
+  </div>`).join("");
+document.querySelectorAll(".card").forEach(c =>
+  c.addEventListener("click", () => c.classList.toggle("flipped")));
+
+/* ---------- Teşekkür panosu ---------- */
+const colors = ["#ffd95a", "#ff9eb5", "#8fd3ff", "#b6f09c", "#ffb877"];
+const seed = [
+  { to: "Sınıf öğretmenime", msg: "Bana okumayı öğrettiğin için teşekkürler. Her kitapta seni hatırlıyorum!" },
+  { to: "Matematik hocama", msg: "Sayılardan korkmayı bıraktım, sayende! ∞ teşekkür." },
+  { to: "Tüm öğretmenlere", msg: "Emeğiniz bizim geleceğimiz. İyi ki varsınız! 🍎" },
+];
+const KEY = "ogretmen-notlari";
+let notes;
+try { notes = JSON.parse(localStorage.getItem(KEY)) || seed; } catch { notes = seed; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch {} }
+
+const notesEl = document.getElementById("notes");
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function render() {
+  notesEl.innerHTML = notes.map((n, idx) => `
+    <div class="note" style="background:${colors[idx % colors.length]}; --r:${((idx * 37) % 9) - 4}deg">
+      <button class="del" data-i="${idx}" title="Sil">✕</button>
+      <div class="to">${esc(n.to)}</div>
+      <div>${esc(n.msg)}</div>
+    </div>`).join("");
+}
+notesEl.addEventListener("click", e => {
+  if (e.target.classList.contains("del")) {
+    notes.splice(+e.target.dataset.i, 1); save(); render();
+  }
+});
+document.getElementById("noteForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const to = document.getElementById("noteTo").value.trim();
+  const msg = document.getElementById("noteMsg").value.trim();
+  if (!to || !msg) return;
+  notes.push({ to, msg }); save(); render();
+  e.target.reset();
+  burst(window.innerWidth / 2, window.innerHeight * 0.6, 80);
+});
+render();
+
+/* ---------- Konfeti ---------- */
+const cv = document.getElementById("confetti");
+const ctx = cv.getContext("2d");
+let parts = [];
+function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+resize(); addEventListener("resize", resize);
+function burst(x, y, n = 150) {
+  for (let k = 0; k < n; k++) {
+    const a = Math.random() * Math.PI * 2, sp = 4 + Math.random() * 9;
+    parts.push({
+      x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 6,
+      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+      rot: Math.random() * 6, vr: Math.random() * .3 - .15,
+      c: colors[k % colors.length], life: 0
+    });
+  }
+  if (parts.length === n) requestAnimationFrame(loop);
+}
+function loop() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  parts.forEach(p => {
+    p.vy += .25; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.life * .1)));
+    ctx.restore();
+  });
+  parts = parts.filter(p => p.y < cv.height + 40 && p.life < 400);
+  if (parts.length) requestAnimationFrame(loop); else ctx.clearRect(0, 0, cv.width, cv.height);
+}
+
+/* ---------- Kağıt uçak ---------- */
+document.getElementById("planeBtn").addEventListener("click", () => {
+  const p = document.createElement("div");
+  p.className = "plane"; p.textContent = "✈️";
+  document.body.appendChild(p);
+  const W = innerWidth, H = innerHeight, startY = H * (.55 + Math.random() * .25);
+  const dur = 2200, t0 = performance.now();
+  (function fly(t) {
+    const k = Math.min((t - t0) / dur, 1);
+    const x = -60 + k * (W + 120);
+    const y = startY - Math.sin(k * Math.PI) * H * .4 - k * H * .15;
+    const ang = -Math.cos(k * Math.PI) * 25 - 10;
+    p.style.transform = `translate(${x}px, ${y - startY}px) rotate(${ang}deg)`;
+    p.style.top = startY + "px";
+    if (k < 1) requestAnimationFrame(fly);
+    else { p.remove(); burst(W * .8, H * .3, 120); }
+  })(t0);
+});
+
+/* ---------- Kaydırınca belirme ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+}), { threshold: .15 });
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+</script>
+</body>
+</html>
